@@ -6,8 +6,6 @@ import (
 	"GolangRestApi_15_07_2022_v2/util"
 	"errors"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
@@ -52,7 +50,7 @@ func (u UserService) UserServiceRegister(users model.Users) (*model.Users, error
 	users.Password = pass
 	fmt.Println("ini service users:", users)
 
-	userRegis, err := repo.NewUserRepo(&gorm.DB{}).UserRepoRegister(users)
+	userRegis, err := u.userRepo.UserRepoRegister(users)
 
 	if err != nil {
 		fmt.Println("Error While Register", err.Error())
@@ -62,7 +60,7 @@ func (u UserService) UserServiceRegister(users model.Users) (*model.Users, error
 }
 
 func (u UserService) UserServiceGetAll() (*[]model.Users, error) {
-	user, err := repo.NewUserRepo(&gorm.DB{}).UserRepoGetAll()
+	user, err := u.userRepo.UserRepoGetAll()
 	fmt.Println("get all:", user)
 	if err != nil {
 		return nil, err
@@ -72,7 +70,7 @@ func (u UserService) UserServiceGetAll() (*[]model.Users, error) {
 }
 
 func (u UserService) UserServiceGetById(users model.Users, id string) (*model.Users, error) {
-	user, err := repo.NewUserRepo(&gorm.DB{}).UserRepoFindById(users, id)
+	user, err := u.userRepo.UserRepoFindById(users, id)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +90,7 @@ func (u UserService) UserServicePut(users model.Users, id string) (*model.Users,
 	if username == "" {
 		return nil, errors.New("Username must be input")
 	}
-	user, err := repo.NewUserRepo(&gorm.DB{}).UserRepoPut(users, id)
+	user, err := u.userRepo.UserRepoPut(users, id)
 	if err != nil {
 		fmt.Println("Error While Update", err.Error())
 		return nil, err
@@ -101,7 +99,7 @@ func (u UserService) UserServicePut(users model.Users, id string) (*model.Users,
 }
 
 func (u UserService) UserServiceDelete(users model.Users, id string) (*model.Users, error) {
-	deleteUser, err := repo.NewUserRepo(&gorm.DB{}).UserRepoDelete(users, id)
+	deleteUser, err := u.userRepo.UserRepoDelete(users, id)
 	if err != nil {
 		return nil, err
 	}

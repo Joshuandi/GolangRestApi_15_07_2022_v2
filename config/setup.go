@@ -14,7 +14,7 @@ import (
 var Gdb *gorm.DB
 var cfg EnvConfig
 
-func ConnectMysqlGorm() (*gorm.DB, error) {
+func ConnectMysqlGorm() *gorm.DB {
 	_ = cleanenv.ReadConfig(".env", &cfg)
 	Gdb, err := gorm.Open(mysql.Open(cfg.Mysql), &gorm.Config{})
 	if err != nil {
@@ -22,8 +22,10 @@ func ConnectMysqlGorm() (*gorm.DB, error) {
 	}
 	fmt.Println("Database Successfuly Connected PORT :", cfg.PORT)
 	Gdb.AutoMigrate(&model.Users{})
-	return Gdb, nil
+	return Gdb
 }
+
+var Db *gorm.DB = ConnectMysqlGorm()
 
 func ConnectMysql() (*sql.DB, error) {
 	db, err := sql.Open("mysql", EnvMysql())

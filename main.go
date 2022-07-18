@@ -12,7 +12,7 @@ import (
 func main() {
 
 	e := echo.New()
-	_, err := config.ConnectMysqlGorm()
+	_, err := config.Db.DB()
 	if err != nil {
 		fmt.Println("error connect:", err.Error())
 		return

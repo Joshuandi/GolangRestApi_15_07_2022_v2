@@ -32,7 +32,7 @@ func (u *UserHandler) UserHandlerRegister(e echo.Context) error {
 
 	fmt.Println("ini bind register user:", users)
 
-	result, err := service.NewUserService(&repo.UserRepo{}).UserServiceRegister(users)
+	result, err := service.NewUserService(repo.UserRepo{}).UserServiceRegister(users)
 
 	if err != nil {
 		return e.JSON(http.StatusBadRequest,
