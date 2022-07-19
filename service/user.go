@@ -6,13 +6,15 @@ import (
 	"GolangRestApi_15_07_2022_v2/util"
 	"errors"
 	"fmt"
+
+	"github.com/labstack/echo/v4"
 )
 
 type UserServiceInterface interface {
-	UserServiceRegister(users model.Users) (*model.Users, error)
-	UserServiceGetAll() (*[]model.Users, error)
-	UserServiceGetById(users model.Users, id string) (*model.Users, error)
-	UserServicePut(users model.Users, id string) (*model.Users, error)
+	UserServiceRegister(e echo.Context, users model.Users) (*model.Users, error)
+	UserServiceGetAll(e echo.Context) (*[]model.Users, error)
+	UserServiceGetById(e echo.Context, users model.Users, id string) (*model.Users, error)
+	UserServicePut(e echo.Context, users model.Users, id string) (*model.Users, error)
 	UserServiceDelete(users model.Users, id string) (*model.Users, error)
 }
 
@@ -24,7 +26,7 @@ func NewUserService(userRepo repo.UserRepoInterface) UserServiceInterface {
 	return &UserService{userRepo: userRepo}
 }
 
-func (u UserService) UserServiceRegister(users model.Users) (*model.Users, error) {
+func (u UserService) UserServiceRegister(e echo.Context, users model.Users) (*model.Users, error) {
 	email := users.Email
 	username := users.Username
 	if _, ok := util.ValidateEmail(users.Email); !ok {
@@ -48,9 +50,9 @@ func (u UserService) UserServiceRegister(users model.Users) (*model.Users, error
 		return nil, errHash
 	}
 	users.Password = pass
-	fmt.Println("ini service users:", users)
+	//fmt.Println("ini service users:", users)
 
-	userRegis, err := u.userRepo.UserRepoRegister(users)
+	userRegis, err := u.userRepo.UserRepoRegister(e, users)
 
 	if err != nil {
 		fmt.Println("Error While Register", err.Error())
@@ -59,9 +61,9 @@ func (u UserService) UserServiceRegister(users model.Users) (*model.Users, error
 	return userRegis, nil
 }
 
-func (u UserService) UserServiceGetAll() (*[]model.Users, error) {
-	user, err := u.userRepo.UserRepoGetAll()
-	fmt.Println("get all:", user)
+func (u UserService) UserServiceGetAll(e echo.Context) (*[]model.Users, error) {
+	user, err := u.userRepo.UserRepoGetAll(e)
+	//fmt.Println("get all:", user)
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +71,8 @@ func (u UserService) UserServiceGetAll() (*[]model.Users, error) {
 	return user, nil
 }
 
-func (u UserService) UserServiceGetById(users model.Users, id string) (*model.Users, error) {
-	user, err := u.userRepo.UserRepoFindById(users, id)
+func (u UserService) UserServiceGetById(e echo.Context, users model.Users, id string) (*model.Users, error) {
+	user, err := u.userRepo.UserRepoFindById(e, users, id)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +80,7 @@ func (u UserService) UserServiceGetById(users model.Users, id string) (*model.Us
 	return user, nil
 }
 
-func (u UserService) UserServicePut(users model.Users, id string) (*model.Users, error) {
+func (u UserService) UserServicePut(e echo.Context, users model.Users, id string) (*model.Users, error) {
 	email := users.Email
 	username := users.Username
 	if _, ok := util.ValidateEmail(email); !ok {
@@ -90,7 +92,7 @@ func (u UserService) UserServicePut(users model.Users, id string) (*model.Users,
 	if username == "" {
 		return nil, errors.New("Username must be input")
 	}
-	user, err := u.userRepo.UserRepoPut(users, id)
+	user, err := u.userRepo.UserRepoPut(e, users, id)
 	if err != nil {
 		fmt.Println("Error While Update", err.Error())
 		return nil, err

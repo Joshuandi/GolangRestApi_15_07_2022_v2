@@ -6,8 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func UserRouter(e *echo.Echo) {
-	var u *handler.UserHandler
+func UserRouter(e *echo.Echo, u *handler.UserHandler) {
 	e.POST("/users/register", u.UserHandlerRegister)
 	e.GET("/users", u.UserHandlerGetAll)
 	e.GET("/users/:id", u.UserHandlerGetById)

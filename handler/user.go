@@ -2,7 +2,6 @@ package handler
 
 import (
 	"GolangRestApi_15_07_2022_v2/model"
-	"GolangRestApi_15_07_2022_v2/repo"
 	"GolangRestApi_15_07_2022_v2/response"
 	"GolangRestApi_15_07_2022_v2/service"
 	"fmt"
@@ -29,11 +28,8 @@ func (u *UserHandler) UserHandlerRegister(e echo.Context) error {
 				Message: "error",
 				Data:    &echo.Map{"data": err.Error()}})
 	}
-
 	fmt.Println("ini bind register user:", users)
-
-	result, err := service.NewUserService(repo.UserRepo{}).UserServiceRegister(users)
-
+	result, err := u.userService.UserServiceRegister(e, users)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest,
 			response.UserResponse{
@@ -50,7 +46,7 @@ func (u *UserHandler) UserHandlerRegister(e echo.Context) error {
 }
 
 func (u *UserHandler) UserHandlerGetAll(e echo.Context) error {
-	result, err := service.NewUserService(&repo.UserRepo{}).UserServiceGetAll()
+	result, err := u.userService.UserServiceGetAll(e)
 	fmt.Println("get all:", result)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest,
@@ -69,7 +65,7 @@ func (u *UserHandler) UserHandlerGetAll(e echo.Context) error {
 func (u *UserHandler) UserHandlerGetById(e echo.Context) error {
 	id := e.Param("id")
 	var users model.Users
-	result, err := service.NewUserService(&repo.UserRepo{}).UserServiceGetById(users, id)
+	result, err := u.userService.UserServiceGetById(e, users, id)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest,
 			response.UserResponse{
@@ -94,7 +90,7 @@ func (u *UserHandler) UserHandlerPut(e echo.Context) error {
 				Message: "error",
 				Data:    &echo.Map{"data": err.Error()}})
 	}
-	result, err := service.NewUserService(&repo.UserRepo{}).UserServicePut(users, id)
+	result, err := u.userService.UserServicePut(e, users, id)
 	if err != nil {
 		return e.JSON(http.StatusBadRequest,
 			response.UserResponse{
@@ -116,7 +112,7 @@ func (u *UserHandler) UserHandlerPut(e echo.Context) error {
 func (u *UserHandler) UserHandlerDelete(e echo.Context) error {
 	id := e.Param("id")
 	if index, err := strconv.Atoi(id); err == nil {
-		_, err := service.NewUserService(&repo.UserRepo{}).UserServiceDelete(model.Users{Id: index}, id)
+		_, err := u.userService.UserServiceDelete(model.Users{Id: index}, id)
 		if err != nil {
 			return e.JSON(http.StatusBadRequest,
 				response.UserResponse{
